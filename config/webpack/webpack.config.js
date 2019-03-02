@@ -7,6 +7,11 @@ module.exports = env => {
   return {
     context: path.join(__dirname, '../../'),
     devtool: isProd ? null : 'source-map',
+    devServer: {
+      contentBase: path.join(__dirname, '../../public'),
+      compress: true,
+      port: 3000,
+    },
     entry: {
       app: ['./src/client/index.js'],
     },
@@ -15,11 +20,12 @@ module.exports = env => {
       publicPath: '/',
       filename: '[name].[contenthash].js',
     },
+    mode: isProd ? 'production' : 'development',
     module: {
       rules: [
         {
           test: /.(js|jsx)$/,
-          include: [path.join('../../src/client')],
+          include: [path.join(__dirname, '../../src/client')],
           use: {
             loader: 'babel-loader',
             options: {

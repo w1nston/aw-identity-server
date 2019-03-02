@@ -26,7 +26,7 @@ module.exports.createExpressServer = function createExpressServer() {
   return {
     start: () => {
       app.get('/', (request, response) => {
-        response.sendFile(path.join(__dirname, '../../public/index.html')); // TODO: hot reload...
+        response.sendFile(path.join(__dirname, '../../public/index.html')); 
       });
 
       const server = app.listen(port, () => {
