@@ -4,7 +4,14 @@ const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
 const isFunction = require('lodash.isfunction');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const webpackConfigFn = require('../../config/webpack/webpack.config');
 
+// TODO: Webpack only in dev server...
+const webpackConfig = webpackConfigFn({ NODE_ENV: 'development' });
+const webpackCompiler = webpack(webpackConfig);
 const port = 3000; // TODO: from process.env
 
 function emitReady() {
@@ -22,11 +29,17 @@ module.exports.createExpressServer = function createExpressServer() {
   app.use(cors());
   app.use(helmet());
   app.use(express.static(path.join(__dirname, '../../public')));
+  app.use( // TODO: Only in dev mode
+    webpackDevMiddleware(webpackCompiler, {
+      publicPath: webpackConfig.output.publicPath,
+    })
+  );
+  app.use(webpackHotMiddleware(webpackCompiler));
 
   return {
     start: () => {
       app.get('/', (request, response) => {
-        response.sendFile(path.join(__dirname, '../../public/index.html')); 
+        response.sendFile(path.join(__dirname, '../../public/index.html'));
       });
 
       const server = app.listen(port, () => {
